@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTS Admin — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070a0f;
+  --bg2: #0d1117;
+  --card: #111620;
+  --border: rgba(255,255,255,0.07);
+  --accent: #e85d04;
+  --accent2: #ff6b1a;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --text: #f0f4ff;
+  --muted: #8892a4;
+  --gradient: linear-gradient(135deg, #e85d04, #7c3aed);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* LOGIN */
+#loginScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 30% 50%, rgba(232,93,4,0.05) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(124,58,237,0.05) 0%, transparent 60%);
+}
+
+.login-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 52px 44px;
+  width: 420px;
+  text-align: center;
+}
+
+.login-logo { height: 64px; margin-bottom: 24px; filter: drop-shadow(0 0 20px rgba(232,93,4,0.4)); }
+.login-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+.login-sub { font-size: 14px; color: var(--muted); margin-bottom: 36px; }
+
+.form-group { text-align: left; margin-bottom: 20px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.form-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,93,4,0.1); }
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gradient);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 25px rgba(232,93,4,0.3);
+  margin-top: 8px;
+}
+.login-btn:hover { box-shadow: 0 0 40px rgba(232,93,4,0.5); transform: translateY(-1px); }
+
+.login-error {
+  color: var(--red);
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+
+/* DASHBOARD */
+#dashboard { display: none; }
+
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  margin-bottom: 36px;
+}
+
+.sidebar-logo img { height: 36px; filter: drop-shadow(0 0 8px rgba(232,93,4,0.4)); }
+.sidebar-logo-text { font-size: 14px; font-weight: 800; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 4px;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: rgba(232,93,4,0.08);
+  color: var(--text);
+  border: 1px solid rgba(232,93,4,0.15);
+}
+
+.nav-item.active { color: var(--accent); }
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.user-name { font-size: 13px; font-weight: 600; }
+.user-role { font-size: 11px; color: var(--muted); }
+
+.logout-btn {
+  display: block;
+  margin-top: 12px;
+  padding: 10px;
+  text-align: center;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: var(--red);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  width: 100%;
+}
+.logout-btn:hover { background: rgba(239,68,68,0.2); }
+
+/* MAIN CONTENT */
+.main-content {
+  margin-left: 240px;
+  padding: 32px;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.page-header p { font-size: 14px; color: var(--muted); }
+
+/* STATS CARDS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  border-color: rgba(232,93,4,0.3);
+  box-shadow: 0 0 30px rgba(232,93,4,0.08);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--gradient);
+}
+
+.stat-icon { font-size: 28px; margin-bottom: 12px; }
+.stat-num { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+/* TABLE */
+.table-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.table-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-title { font-size: 16px; font-weight: 700; }
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: rgba(232,93,4,0.1);
+  border-color: rgba(232,93,4,0.3);
+  color: var(--accent);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 12px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+td {
+  padding: 16px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.badge-pending { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.badge-confirmed { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.badge-repair { background: rgba(232,93,4,0.12); color: var(--accent); border: 1px solid rgba(232,93,4,0.25); }
+.badge-buysell { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.25); }
+
+.action-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.2s;
+  margin-right: 4px;
+}
+
+.action-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.action-btn.confirm { border-color: rgba(16,185,129,0.4); color: var(--green); }
+.action-btn.confirm:hover { background: rgba(16,185,129,0.1); }
+.action-btn.delete { border-color: rgba(239,68,68,0.4); color: var(--red); }
+.action-btn.delete:hover { background: rgba(239,68,68,0.1); }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--muted);
+}
+
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+/* HIDDEN PAGES */
+.admin-page { display: none; }
+.admin-page.active { display: block; }
+
+/* NOTIFICATION */
+.notification {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  background: var(--card);
+  border: 1px solid rgba(232,93,4,0.3);
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 14px;
+  z-index: 9999;
+  display: none;
+  box-shadow: 0 0 30px rgba(232,93,4,0.15);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+</style>
+</head>
+<body>
+
+<div class="notification" id="notif"></div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img class="login-logo" src="../images/logo-new.png" alt="VTS">
+    <div class="login-title">Admin Portal</div>
+    <p class="login-sub">Virk Tech Solutions — Staff Access</p>
+    
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" id="loginUser" placeholder="Enter username">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="loginPass" placeholder="Enter password" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-error" id="loginError">Invalid username or password</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../images/logo-new.png" alt="VTS">
+      <span class="sidebar-logo-text">VTS ADMIN</span>
+    </div>
+    
+    <button class="nav-item active" onclick="switchTab('overview')">📊 Overview</button>
+    <button class="nav-item" onclick="switchTab('bookings')">📅 Bookings</button>
+    <button class="nav-item" onclick="switchTab('buysell')">🔄 Buy & Sell</button>
+    <button class="nav-item" onclick="switchTab('stores')">📍 Stores</button>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div>
+          <div class="user-name" id="userName">Admin</div>
+          <div class="user-role" id="userRole">Administrator</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    
+    <!-- OVERVIEW -->
+    <div class="admin-page active" id="tab-overview">
+      <div class="page-header">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back! Here's what's happening at Virk Tech Solutions.</p>
+      </div>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-num" id="statRepairs">0</div>
+          <div class="stat-label">Repair Bookings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔄</div>
+          <div class="stat-num" id="statBuySell">0</div>
+          <div class="stat-label">Buy/Sell Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-num" id="statPending">0</div>
+          <div class="stat-label">Pending Actions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-num" id="statConfirmed">0</div>
+          <div class="stat-label">Confirmed</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Recent Activity</div>
+        </div>
+        <div id="recentActivity">
+          <div class="empty-state"><div class="empty-icon">📭</div><p>No recent activity yet.<br>Bookings from the website will appear here.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="admin-page" id="tab-bookings">
+      <div class="page-header">
+        <h1>Repair Bookings</h1>
+        <p>Manage all device repair appointments.</p>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">All Repair Bookings</div>
+          <div class="filter-tabs">
+            <button class="tab-btn active" onclick="filterBookings('all', this)">All</button>
+            <button class="tab-btn" onclick="filterBookings('pending', this)">Pending</button>
+            <button class="tab-btn" onclick="filterBookings('confirmed', this)">Confirmed</button>
+          </div>
+        </div>
+        <div id="bookingsTable"></div>
+      </div>
+    </div>
+
+    <!-- BUY SELL -->
+    <div class="admin-page" id="tab-buysell">
+      <div class="page-header">
+        <h1>Buy & Sell Requests</h1>
+        <p>Manage device buy and sell enquiries.</p>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">All Buy & Sell Requests</div>
+        </div>
+        <div id="bsTable"></div>
+      </div>
+    </div>
+
+    <!-- STORES -->
+    <div class="admin-page" id="tab-stores">
+      <div class="page-header">
+        <h1>Store Information</h1>
+        <p>All VTS London locations at a glance.</p>
+      </div>
+      <div id="storesInfo"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============ ADMIN ACCOUNTS ============
+const ADMINS = [
+  { username: 'admin', password: 'VTS@Admin2025', name: 'Super Admin', role: 'Administrator' },
+  { username: 'manager', password: 'VTS@Mgr2025', name: 'Store Manager', role: 'Manager' },
+  { username: 'belvedere', password: 'VTS@Bel2025', name: 'Belvedere Staff', role: 'Staff — Belvedere' },
+  { username: 'sidcup', password: 'VTS@Sid2025', name: 'Sidcup Staff', role: 'Staff — Sidcup' },
+  { username: 'woolwich', password: 'VTS@Woo2025', name: 'Woolwich Staff', role: 'Staff — Woolwich' }
+];
+
+const STORES = [
+  { name: 'Belvedere', address: '25 Nuxley Road, Belvedere, DA17 5JE', phone: '07824 528888', type: 'Mobiles, Repairs, Vapes & Keys' },
+  { name: 'New Eltham', address: '371 Footscray Road, New Eltham, SE9 2DR', phone: '07411 321131', type: 'Mobiles, Repairs & Vapes' },
+  { name: 'Sidcup', address: '69a High Street, Sidcup, DA14 6DW', phone: '07766 623999', type: 'Mobiles, Repairs, Vapes & Keys' },
+  { name: 'New Eltham Keys', address: '1 Station Approach, SE9 2AB', phone: '07522 657777', type: 'Key Cutting & Watch Repairs' },
+  { name: 'Woolwich', address: '1B Woolwich New Road, SE18 6EX', phone: '07572 380092', type: 'Mobiles, Repairs & Vapes' },
+  { name: 'Blackfen', address: 'Blackfen Road, Sidcup, DA15', phone: '07762 121336', type: 'Mobiles, Vapes, Keys & Shoes' }
+];
+
+let currentUser = null;
+let bookingFilter = 'all';
+
+// ============ LOGIN ============
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const admin = ADMINS.find(a => a.username === user && a.password === pass);
+  
+  if (admin) {
+    currentUser = admin;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('userName').textContent = admin.name;
+    document.getElementById('userRole').textContent = admin.role;
+    document.getElementById('userAvatar').textContent = admin.name[0].toUpperCase();
+    loadData();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// ============ TABS ============
+function switchTab(tab) {
+  document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+  
+  if (tab === 'stores') renderStoresAdmin();
+  if (tab === 'bookings') renderBookings();
+  if (tab === 'buysell') renderBuySell();
+}
+
+// ============ DATA ============
+function getBookings() {
+  return JSON.parse(localStorage.getItem('vts_bookings') || '[]');
+}
+
+function loadData() {
+  const bookings = getBookings();
+  const repairs = bookings.filter(b => b.type === 'repair');
+  const bs = bookings.filter(b => b.type === 'buysell');
+  const pending = bookings.filter(b => b.status === 'pending');
+  const confirmed = bookings.filter(b => b.status === 'confirmed');
+  
+  document.getElementById('statRepairs').textContent = repairs.length;
+  document.getElementById('statBuySell').textContent = bs.length;
+  document.getElementById('statPending').textContent = pending.length;
+  document.getElementById('statConfirmed').textContent = confirmed.length;
+  
+  // Recent activity
+  const recent = bookings.slice(0, 10);
+  if (recent.length === 0) return;
+  
+  const html = `<table>
+    <thead><tr>
+      <th>ID</th><th>Type</th><th>Name</th><th>Details</th><th>Date</th><th>Status</th>
+    </tr></thead>
+    <tbody>
+      ${recent.map(b => `
+        <tr>
+          <td><code style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent)">${b.id}</code></td>
+          <td><span class="badge ${b.type === 'repair' ? 'badge-repair' : 'badge-buysell'}">${b.type === 'repair' ? '🔧 Repair' : '🔄 Buy/Sell'}</span></td>
+          <td>${b.name}</td>
+          <td style="color: var(--muted)">${b.type === 'repair' ? `${b.device} — ${b.repairType}` : `${b.requestType} — ${b.brand} ${b.model}`}</td>
+          <td style="color: var(--muted); font-size: 12px;">${new Date(b.createdAt).toLocaleDateString('en-GB')}</td>
+          <td><span class="badge ${b.status === 'pending' ? 'badge-pending' : 'badge-confirmed'}">${b.status}</span></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>`;
+  document.getElementById('recentActivity').innerHTML = html;
+}
+
+function renderBookings() {
+  const bookings = getBookings().filter(b => b.type === 'repair');
+  const filtered = bookingFilter === 'all' ? bookings : bookings.filter(b => b.status === bookingFilter);
+  
+  if (filtered.length === 0) {
+    document.getElementById('bookingsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>No repair bookings yet.</p></div>';
+    return;
+  }
+  
+  document.getElementById('bookingsTable').innerHTML = `<table>
+    <thead><tr>
+      <th>ID</th><th>Customer</th><th>Device</th><th>Repair</th><th>Appt. Date</th><th>Branch</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      ${filtered.map(b => `
+        <tr>
+          <td><code style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent)">${b.id}</code></td>
+          <td>
+            <div style="font-weight: 600">${b.name}</div>
+            <div style="font-size: 12px; color: var(--muted)">${b.email}</div>
+            <div style="font-size: 12px; color: var(--muted)">${b.phone}</div>
+          </td>
+          <td>${b.device}</td>
+          <td>${b.repairType}</td>
+          <td>${b.date} at ${b.time}</td>
+          <td style="font-size: 13px; color: var(--muted)">${b.branch?.split('—')[0].trim() || ''}</td>
+          <td><span class="badge ${b.status === 'pending' ? 'badge-pending' : 'badge-confirmed'}">${b.status}</span></td>
+          <td>
+            <button class="action-btn confirm" onclick="updateStatus('${b.id}', 'confirmed')">✓ Confirm</button>
+            <button class="action-btn delete" onclick="deleteBooking('${b.id}')">✕</button>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderBuySell() {
+  const bookings = getBookings().filter(b => b.type === 'buysell');
+  
+  if (bookings.length === 0) {
+    document.getElementById('bsTable').innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>No buy/sell requests yet.</p></div>';
+    return;
+  }
+  
+  document.getElementById('bsTable').innerHTML = `<table>
+    <thead><tr>
+      <th>ID</th><th>Customer</th><th>Type</th><th>Device</th><th>Condition</th><th>Notes</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      ${bookings.map(b => `
+        <tr>
+          <td><code style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent)">${b.id}</code></td>
+          <td>
+            <div style="font-weight: 600">${b.name}</div>
+            <div style="font-size: 12px; color: var(--muted)">${b.email}</div>
+            <div style="font-size: 12px; color: var(--muted)">${b.phone}</div>
+          </td>
+          <td><span class="badge ${b.requestType === 'sell' ? 'badge-buysell' : 'badge-repair'}">${b.requestType === 'sell' ? '💰 Sell' : '🛍️ Buy'}</span></td>
+          <td>${b.brand} ${b.model}</td>
+          <td style="font-size: 13px; color: var(--muted)">${b.condition?.split('—')[0].trim() || ''}</td>
+          <td style="font-size: 12px; color: var(--muted); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${b.notes}">${b.notes || '—'}</td>
+          <td><span class="badge ${b.status === 'pending' ? 'badge-pending' : 'badge-confirmed'}">${b.status}</span></td>
+          <td>
+            <button class="action-btn confirm" onclick="updateStatus('${b.id}', 'confirmed')">✓ Accept</button>
+            <button class="action-btn delete" onclick="deleteBooking('${b.id}')">✕</button>
+          </td>
+        </tr>
+      `).join('')}
+    </tbody>
+  </table>`;
+}
+
+function renderStoresAdmin() {
+  document.getElementById('storesInfo').innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+      ${STORES.map(s => `
+        <div style="background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+          <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">${s.name}</div>
+          <div style="font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px;">${s.type}</div>
+          <div style="font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 8px;">📍 ${s.address}</div>
+          <div style="font-size: 14px; color: var(--muted);">📞 ${s.phone}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function updateStatus(id, status) {
+  const bookings = getBookings();
+  const idx = bookings.findIndex(b => b.id === id);
+  if (idx !== -1) {
+    bookings[idx].status = status;
+    localStorage.setItem('vts_bookings', JSON.stringify(bookings));
+    loadData();
+    renderBookings();
+    renderBuySell();
+    showNotif('✅ Status updated to ' + status);
+  }
+}
+
+function deleteBooking(id) {
+  if (!confirm('Delete this booking?')) return;
+  const bookings = getBookings().filter(b => b.id !== id);
+  localStorage.setItem('vts_bookings', JSON.stringify(bookings));
+  loadData();
+  renderBookings();
+  renderBuySell();
+  showNotif('🗑️ Booking deleted');
+}
+
+function filterBookings(f, el) {
+  bookingFilter = f;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderBookings();
+}
+
+function showNotif(msg) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>

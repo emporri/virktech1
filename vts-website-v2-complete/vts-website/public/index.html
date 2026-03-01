@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virk Tech Solutions | Expert Tech Repairs London</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ORANGE THEME */
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --card: #161616;
+  --card2: #1e1e1e;
+  --acc: #e85d04;
+  --acc-l: #ff6b1a;
+  --acc-d: #c44d00;
+  --acc-a: #ff9a3c;
+  --txt: #ffffff;
+  --txt2: #9a9a9a;
+  --muted: #555555;
+  --border: rgba(255,255,255,0.07);
+  --ba: rgba(232,93,4,0.35);
+  --glow: 0 0 50px rgba(232,93,4,0.22);
+  --glows: 0 0 80px rgba(232,93,4,0.38);
+  --grad: linear-gradient(135deg, #e85d04, #ff9a3c);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: "Outfit", sans-serif; background: var(--bg); color: var(--txt); overflow-x: hidden; min-height: 100vh; }
+
+/* LOADER */
+#loader {
+  position: fixed; inset: 0; background: #050505; z-index: 9999;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; overflow: hidden;
+}
+#loader::before {
+  content: ""; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px;
+  background: radial-gradient(ellipse, rgba(232,93,4,0.1) 0%, transparent 70%); pointer-events: none;
+}
+.loader-logo { width: 280px; height: auto; animation: rl 3s ease-in-out infinite; filter: drop-shadow(0 0 40px rgba(232,93,4,0.7)); }
+@keyframes rl {
+  0%,100% { transform: perspective(600px) rotateY(-12deg) scale(1); filter: drop-shadow(0 0 40px rgba(232,93,4,0.7)); }
+  50% { transform: perspective(600px) rotateY(12deg) scale(1.04); filter: drop-shadow(0 0 65px rgba(255,107,26,0.95)); }
+}
+.loader-bar-wrap { width: 300px; background: rgba(255,255,255,0.06); border-radius: 100px; height: 3px; overflow: visible; position: relative; }
+.loader-bar { height: 100%; width: 0%; background: var(--grad); border-radius: 100px; transition: width 0.12s ease; box-shadow: 0 0 18px rgba(232,93,4,0.9); position: relative; }
+.loader-bar::after { content: ""; position: absolute; right: -6px; top: -4px; width: 11px; height: 11px; background: var(--acc-a); border-radius: 50%; box-shadow: 0 0 14px var(--acc-a); }
+.loader-pct { font-family: "Space Mono", monospace; font-size: 11px; color: var(--acc); letter-spacing: 3px; text-transform: uppercase; }
+.loader-msg { font-size: 30px; font-weight: 200; letter-spacing: 10px; color: var(--txt); opacity: 0; transition: opacity 0.6s ease; text-align: center; text-transform: uppercase; }
+.loader-msg span { color: var(--acc); font-weight: 800; }
+.loader-msg.vis { opacity: 1; }
+
+/* NAVBAR */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 0 48px; height: 72px; display: flex; align-items: center; justify-content: space-between;
+  backdrop-filter: blur(24px); background: rgba(10,10,10,0.8); border-bottom: 1px solid transparent; transition: all 0.3s;
+}
+#navbar.sc { border-bottom-color: rgba(232,93,4,0.15); box-shadow: 0 4px 40px rgba(0,0,0,0.6); }
+.nav-logo { display: flex; align-items: center; text-decoration: none; }
+.nav-logo img { height: 36px; width: auto; filter: drop-shadow(0 0 12px rgba(232,93,4,0.5)); }
+.nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+.nav-links a { color: var(--txt2); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 14px; border-radius: 8px; transition: all 0.2s; cursor: pointer; }
+.nav-links a:hover, .nav-links a.active { color: var(--txt); background: rgba(255,255,255,0.05); }
+.nav-links a.active { color: var(--acc); }
+.nav-cta { background: var(--acc) !important; color: white !important; font-weight: 700 !important; padding: 10px 22px !important; border-radius: 50px !important; box-shadow: 0 0 20px rgba(232,93,4,0.4) !important; }
+.nav-cta:hover { background: var(--acc-l) !important; box-shadow: 0 0 40px rgba(232,93,4,0.6) !important; transform: translateY(-1px) !important; color: white !important; }
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+.hamburger span { width: 24px; height: 2px; background: var(--txt); border-radius: 2px; transition: all 0.3s; }
+
+/* PAGES */
+.pg { display: none; min-height: 100vh; padding-top: 72px; }
+.pg.active { display: block; }
+#pg-home.active { display: block; }
+
+/* MOBILE NAV */
+.mnav {
+  display: none; position: fixed; top: 72px; left: 0; right: 0;
+  background: rgba(10,10,10,0.98); backdrop-filter: blur(24px); border-bottom: 1px solid rgba(232,93,4,0.15);
+  z-index: 999; padding: 20px; flex-direction: column; gap: 6px;
+}
+.mnav.open { display: flex; }
+.mnav a { color: var(--txt2); text-decoration: none; padding: 14px 16px; border-radius: 12px; font-size: 16px; font-weight: 500; transition: all 0.2s; }
+.mnav a:hover { background: rgba(232,93,4,0.08); color: var(--txt); }
+
+/* HERO */
+.hero { position: relative; height: calc(100vh - 72px); display: flex; align-items: center; overflow: hidden; }
+.hero-bg { position: absolute; top: -30%; right: -20%; width: 80%; height: 130%; background: radial-gradient(ellipse at 70% 40%, rgba(232,93,4,0.2) 0%, rgba(255,107,26,0.06) 40%, transparent 70%); pointer-events: none; z-index: 0; }
+.hero-arc { position: absolute; bottom: -60px; left: -100px; width: 700px; height: 700px; border-radius: 50%; border: 1px solid rgba(232,93,4,0.1); pointer-events: none; z-index: 0; }
+.hero-arc::after { content: ""; position: absolute; top: 60px; left: 60px; right: 60px; bottom: 60px; border-radius: 50%; border: 1px solid rgba(232,93,4,0.06); }
+.hero-content { position: relative; z-index: 10; padding: 0 60px; max-width: 620px; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: rgba(232,93,4,0.1); border: 1px solid rgba(232,93,4,0.35); border-radius: 100px;
+  padding: 7px 18px; font-size: 11px; font-weight: 700; letter-spacing: 2.5px; color: var(--acc);
+  text-transform: uppercase; margin-bottom: 28px; animation: fiu 0.6s ease 0.2s both;
+}
+.hero-pill::before { content: ""; width: 7px; height: 7px; background: var(--acc); border-radius: 50%; box-shadow: 0 0 12px var(--acc); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+.hero-h1 { font-size: clamp(44px, 5.5vw, 74px); font-weight: 900; line-height: 1.0; margin-bottom: 22px; animation: fiu 0.6s ease 0.35s both; letter-spacing: -1px; }
+.hero-h1 .hl { display: block; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero-p { font-size: 17px; color: var(--txt2); line-height: 1.75; margin-bottom: 40px; font-weight: 300; animation: fiu 0.6s ease 0.5s both; max-width: 480px; }
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; animation: fiu 0.6s ease 0.65s both; }
+.hero-spline { position: absolute; top: 0; right: -80px; width: 62%; height: 100%; z-index: 1; }
+.hero-spline iframe { width: 100%; height: 100%; border: none; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, var(--bg) 28%, rgba(10,10,10,0.7) 55%, transparent 75%); z-index: 5; pointer-events: none; }
+
+/* BUTTONS */
+.btn-p { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; background: var(--acc); color: white; border: none; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s; box-shadow: 0 0 30px rgba(232,93,4,0.45); letter-spacing: 0.3px; position: relative; overflow: hidden; }
+.btn-p::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent); opacity: 0; transition: opacity 0.3s; }
+.btn-p:hover::before { opacity: 1; }
+.btn-p:hover { background: var(--acc-l); transform: translateY(-2px); box-shadow: 0 0 50px rgba(232,93,4,0.65); }
+.btn-s { display: inline-flex; align-items: center; gap: 8px; padding: 15px 32px; background: transparent; color: var(--txt); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.3s; }
+.btn-s:hover { border-color: var(--acc); color: var(--acc); background: rgba(232,93,4,0.06); transform: translateY(-2px); }
+
+/* TICKER */
+.ticker-wrap { background: var(--acc); padding: 14px 0; overflow: hidden; white-space: nowrap; }
+.ticker-inner { display: inline-flex; animation: tk 32s linear infinite; }
+.ticker-item { display: inline-flex; align-items: center; gap: 12px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: white; padding: 0 30px; }
+.ticker-dot { width: 4px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+@keyframes tk { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* STATS */
+.stats-bar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 40px 60px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.si { text-align: center; padding: 24px 16px; position: relative; }
+.si:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--border); }
+.si-num { font-size: 48px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: block; line-height: 1; margin-bottom: 8px; letter-spacing: -1px; }
+.si-lbl { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+
+/* SECTION */
+.section { padding: 100px 60px; max-width: 1400px; margin: 0 auto; }
+.stag { display: inline-block; background: rgba(232,93,4,0.1); border: 1px solid rgba(232,93,4,0.25); color: var(--acc); font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; padding: 5px 14px; border-radius: 100px; margin-bottom: 16px; }
+.sh { margin-bottom: 60px; }
+.st { font-size: clamp(32px, 3.5vw, 52px); font-weight: 900; line-height: 1.05; margin-bottom: 16px; letter-spacing: -0.5px; }
+.ss { font-size: 16px; color: var(--txt2); max-width: 520px; line-height: 1.75; font-weight: 300; }
+
+/* SERVICE CARDS */
+.sgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.sc2 { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px 30px; position: relative; overflow: hidden; transition: all 0.4s; cursor: pointer; }
+.sc2::before { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--grad); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+.sc2::after { content: ""; position: absolute; top: 0; right: 0; width: 120px; height: 120px; background: radial-gradient(ellipse, rgba(232,93,4,0.06) 0%, transparent 70%); pointer-events: none; }
+.sc2:hover { background: var(--card2); border-color: rgba(232,93,4,0.25); transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.5), var(--glow); }
+.sc2:hover::before { transform: scaleX(1); }
+.sc2-ico { width: 56px; height: 56px; background: rgba(232,93,4,0.1); border: 1px solid rgba(232,93,4,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 24px; }
+.sc2-title { font-size: 19px; font-weight: 800; margin-bottom: 12px; }
+.sc2-desc { font-size: 14px; color: var(--txt2); line-height: 1.75; margin-bottom: 22px; }
+.sc2-link { font-size: 11px; color: var(--acc); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: gap 0.2s; }
+.sc2:hover .sc2-link { gap: 10px; }
+
+/* TESTIMONIALS */
+.t-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 100px 60px; overflow: hidden; position: relative; }
+.t-section::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(232,93,4,0.05) 0%, transparent 70%); pointer-events: none; }
+.r-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1200px; margin: 0 auto; }
+.r-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px 28px; position: relative; transition: all 0.4s; }
+.r-card:hover { border-color: rgba(232,93,4,0.25); transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.4), var(--glow); }
+.r-quote { font-size: 40px; color: var(--acc); line-height: 1; margin-bottom: 14px; opacity: 0.55; font-family: Georgia, serif; }
+.r-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+.r-stars span { color: var(--acc); font-size: 15px; }
+.r-text { font-size: 14px; color: var(--txt2); line-height: 1.8; margin-bottom: 22px; font-style: italic; font-weight: 300; }
+.r-author { display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 18px; }
+.r-av { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; flex-shrink: 0; }
+.r-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.r-meta { font-size: 11px; color: var(--muted); }
+.r-badge { position: absolute; top: 20px; right: 20px; background: rgba(232,93,4,0.1); border: 1px solid rgba(232,93,4,0.2); border-radius: 8px; padding: 4px 10px; font-size: 10px; font-weight: 700; color: var(--acc); letter-spacing: 1px; }
+
+/* ABOUT */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.af-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 36px; }
+.af { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px 18px; transition: border-color 0.3s; }
+.af:hover { border-color: rgba(232,93,4,0.3); }
+.af-ico { font-size: 24px; margin-bottom: 10px; }
+.af-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.af-desc { font-size: 12px; color: var(--txt2); }
+.about-vis { background: var(--card); border: 1px solid rgba(232,93,4,0.15); border-radius: 28px; padding: 50px 40px; text-align: center; position: relative; overflow: hidden; }
+.about-vis::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, rgba(232,93,4,0.07) 0%, transparent 70%); pointer-events: none; }
+.about-logo { width: 220px; height: auto; filter: drop-shadow(0 0 40px rgba(232,93,4,0.6)); position: relative; animation: fl 4s ease-in-out infinite; }
+@keyframes fl { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.02); } }
+
+/* PAGE HERO */
+.ph { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 70px 60px 48px; position: relative; overflow: hidden; }
+.ph::after { content: ""; position: absolute; top: 0; right: 0; width: 400px; height: 100%; background: radial-gradient(ellipse at 80% 50%, rgba(232,93,4,0.09) 0%, transparent 70%); pointer-events: none; }
+
+/* PRODUCTS */
+.pc { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; padding: 20px 60px; border-bottom: 1px solid var(--border); background: rgba(17,17,17,0.9); position: sticky; top: 72px; z-index: 100; backdrop-filter: blur(20px); }
+.fsel, .sinput { background: var(--card); border: 1px solid var(--border); color: var(--txt); padding: 10px 16px; border-radius: 10px; font-family: "Outfit", sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+.fsel:focus, .sinput:focus { border-color: var(--acc); }
+.sinput { flex: 1; min-width: 200px; cursor: text; }
+.sinput::placeholder { color: var(--muted); }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; padding: 40px 60px; max-width: 1400px; margin: 0 auto; }
+.pcard { background: var(--card); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; transition: all 0.3s; }
+.pcard:hover { border-color: rgba(232,93,4,0.3); transform: translateY(-5px); box-shadow: 0 16px 50px rgba(0,0,0,0.5), var(--glow); }
+.pimg { width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #161616, #1e1e1e); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.pimg img { width: 100%; height: 100%; object-fit: contain; padding: 16px; transition: transform 0.4s; }
+.pcard:hover .pimg img { transform: scale(1.06); }
+.pimg .efb { font-size: 56px; position: absolute; opacity: 0.35; }
+.pimg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.2)); pointer-events: none; }
+.pinfo { padding: 20px; }
+.pbadge { display: inline-block; background: rgba(232,93,4,0.1); color: var(--acc); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; margin-bottom: 10px; }
+.pname { font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 10px; }
+.pprice { font-size: 22px; font-weight: 900; color: var(--acc); }
+.pcta { margin-top: 14px; width: 100%; padding: 11px; background: rgba(232,93,4,0.08); border: 1px solid rgba(232,93,4,0.25); color: var(--acc); border-radius: 10px; font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.pcta:hover { background: rgba(232,93,4,0.18); box-shadow: 0 0 20px rgba(232,93,4,0.25); }
+
+/* REPAIR PAGE */
+.ds { max-width: 960px; margin: 0 auto; padding: 60px; }
+.sl { font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--acc); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.sl::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.dmakes { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 48px; }
+.dmc { background: var(--card); border: 2px solid var(--border); border-radius: 16px; padding: 22px 16px 18px; text-align: center; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.dmc img { width: 38px; height: 38px; object-fit: contain; filter: grayscale(1) brightness(0.6); transition: all 0.3s; }
+.dmc-lbl { font-size: 12px; font-weight: 600; color: var(--txt2); transition: color 0.3s; }
+.dmc:hover, .dmc.sel { border-color: var(--acc); background: rgba(232,93,4,0.08); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.4), var(--glow); }
+.dmc:hover img, .dmc.sel img { filter: grayscale(0) brightness(1); }
+.dmc.sel .dmc-lbl { color: var(--acc); }
+.msel { display: none; }
+.msel.vis { display: block; }
+.minp { width: 100%; background: var(--card); border: 2px solid var(--border); color: var(--txt); padding: 16px 20px; border-radius: 14px; font-family: "Outfit", sans-serif; font-size: 16px; outline: none; transition: all 0.2s; }
+.minp:focus { border-color: var(--acc); box-shadow: 0 0 0 4px rgba(232,93,4,0.08); }
+.minp::placeholder { color: var(--muted); }
+.mhint { font-size: 12px; color: var(--muted); margin-top: 8px; padding-left: 4px; }
+.rt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; margin-top: 24px; }
+.rtb { background: var(--card); border: 1px solid var(--border); color: var(--txt2); padding: 18px 12px; border-radius: 14px; font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.4; }
+.rtb .ri { font-size: 24px; display: block; margin-bottom: 8px; }
+.rtb:hover, .rtb.sel { border-color: var(--acc); color: var(--acc); background: rgba(232,93,4,0.08); transform: translateY(-2px); }
+.proc-btn { display: block; margin: 48px auto 0; padding: 18px 60px; background: var(--acc); border: none; border-radius: 50px; color: white; font-family: "Outfit", sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 35px rgba(232,93,4,0.4); letter-spacing: 0.5px; }
+.proc-btn:hover { background: var(--acc-l); transform: translateY(-2px); box-shadow: 0 0 55px rgba(232,93,4,0.6); }
+.proc-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* BUY SELL */
+.bs-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; max-width: 820px; margin: 60px auto; padding: 0 60px; }
+.bso { background: var(--card); border: 2px solid var(--border); border-radius: 24px; padding: 50px 36px; text-align: center; cursor: pointer; transition: all 0.4s; position: relative; overflow: hidden; }
+.bso::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, rgba(232,93,4,0.08) 0%, transparent 70%); opacity: 0; transition: opacity 0.4s; }
+.bso:hover::after { opacity: 1; }
+.bso:hover { border-color: var(--acc); transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,0.5), var(--glows); }
+.bso-ico { font-size: 56px; margin-bottom: 20px; display: block; }
+.bso-title { font-size: 26px; font-weight: 900; margin-bottom: 12px; }
+.bso-desc { font-size: 14px; color: var(--txt2); line-height: 1.8; }
+
+/* MODALS */
+.mo { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9000; backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
+.mo.open { display: flex; }
+.md { background: var(--card); border: 1px solid rgba(232,93,4,0.2); border-radius: 24px; padding: 48px 44px; max-width: 520px; width: 100%; position: relative; animation: mi 0.4s cubic-bezier(0.34,1.56,0.64,1); max-height: 90vh; overflow-y: auto; box-shadow: 0 0 100px rgba(232,93,4,0.1); }
+.md::-webkit-scrollbar { width: 4px; }
+.md::-webkit-scrollbar-thumb { background: rgba(232,93,4,0.3); border-radius: 4px; }
+@keyframes mi { from { opacity: 0; transform: scale(0.88) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.mc { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.06); border: none; color: var(--txt2); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.mc:hover { background: rgba(232,93,4,0.15); color: var(--acc); }
+.mt { font-size: 26px; font-weight: 900; margin-bottom: 6px; letter-spacing: -0.3px; }
+.msub { font-size: 14px; color: var(--txt2); margin-bottom: 32px; line-height: 1.7; }
+.fg { margin-bottom: 20px; }
+.fl { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--txt2); margin-bottom: 8px; }
+.fi, .fs, .fta { width: 100%; background: var(--bg2); border: 1px solid var(--border); color: var(--txt); padding: 13px 16px; border-radius: 12px; font-family: "Outfit", sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s; }
+.fi:focus, .fs:focus, .fta:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(232,93,4,0.1); }
+.fta { resize: vertical; min-height: 90px; }
+.msub-btn { width: 100%; padding: 16px; background: var(--acc); border: none; border-radius: 50px; color: white; font-family: "Outfit", sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 30px rgba(232,93,4,0.4); margin-top: 10px; letter-spacing: 0.5px; }
+.msub-btn:hover { background: var(--acc-l); box-shadow: 0 0 50px rgba(232,93,4,0.6); transform: translateY(-1px); }
+.sst { text-align: center; padding: 20px 0; display: none; }
+.ssi { font-size: 70px; margin-bottom: 16px; animation: bi 0.5s ease; }
+@keyframes bi { 0% { transform: scale(0); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+/* STORE LOCATOR */
+.slgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; padding: 60px; max-width: 1400px; margin: 0 auto; }
+.slcard { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; transition: all 0.3s; }
+.slcard:hover { border-color: rgba(232,93,4,0.3); box-shadow: 0 16px 50px rgba(0,0,0,0.5), var(--glow); transform: translateY(-4px); }
+.smap { width: 100%; height: 200px; background: linear-gradient(135deg, #161616, #1e1e1e); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; cursor: pointer; text-decoration: none; transition: background 0.3s; position: relative; overflow: hidden; }
+.smap::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(232,93,4,0.04), transparent); }
+.smap:hover { background: #1e1e1e; }
+.smap-ico { font-size: 40px; }
+.smap-lbl { font-size: 13px; font-weight: 700; color: var(--acc); letter-spacing: 1px; }
+.smap-sub { font-size: 11px; color: var(--muted); }
+.sinfo { padding: 26px; }
+.sname { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+.stype { font-size: 11px; color: var(--acc); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; }
+.saddr { font-size: 14px; color: var(--txt2); line-height: 1.8; margin-bottom: 14px; }
+.sphone { font-size: 15px; font-weight: 700; color: var(--txt); text-decoration: none; display: inline-flex; align-items: center; gap: 7px; margin-bottom: 18px; transition: color 0.2s; }
+.sphone:hover { color: var(--acc); }
+.sacts { display: flex; gap: 10px; }
+.sabt { flex: 1; padding: 11px; border-radius: 10px; font-family: "Outfit", sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s; border: 1px solid var(--border); background: transparent; color: var(--txt2); }
+.sabt.p { background: rgba(232,93,4,0.1); border-color: rgba(232,93,4,0.3); color: var(--acc); }
+.sabt:hover { opacity: 0.8; transform: translateY(-1px); }
+
+/* FOOTER */
+footer { background: #070707; border-top: 1px solid var(--border); padding: 70px 60px 0; }
+.fg2 { display: grid; grid-template-columns: 1.8fr 1fr 1fr; gap: 48px; margin-bottom: 50px; }
+.fbrand img { height: 40px; margin-bottom: 18px; filter: drop-shadow(0 0 12px rgba(232,93,4,0.4)); }
+.fbrand p { font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 280px; margin-bottom: 24px; }
+.fsoc { display: flex; gap: 10px; }
+.fsocb { width: 38px; height: 38px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+.fsocb:hover { border-color: var(--acc); background: rgba(232,93,4,0.1); }
+.fcol h4 { font-size: 10px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+.fcol ul { list-style: none; }
+.fcol ul li { margin-bottom: 10px; }
+.fcol ul li a { color: var(--txt2); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer; display: inline-block; }
+.fcol ul li a:hover { color: var(--acc); }
+/* FOOTER LOCS */
+.flband { border-top: 1px solid var(--border); padding: 40px 0; }
+.flband h4 { font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 24px; text-align: center; }
+.flgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.fli { text-align: center; padding: 16px 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); text-decoration: none; transition: all 0.3s; display: block; }
+.fli:hover { border-color: rgba(232,93,4,0.35); background: rgba(232,93,4,0.06); transform: translateY(-2px); }
+.fli-name { font-size: 11px; font-weight: 800; color: var(--txt); margin-bottom: 4px; line-height: 1.3; }
+.fli-addr { font-size: 10px; color: var(--muted); line-height: 1.5; margin-bottom: 5px; }
+.fli-phone { font-size: 11px; color: var(--acc); font-weight: 600; }
+.fbot { border-top: 1px solid var(--border); padding: 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.fbot p { font-size: 13px; color: var(--muted); }
+
+/* WA BTN */
+#wa { position: fixed; bottom: 32px; right: 32px; z-index: 999; width: 62px; height: 62px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 25px rgba(37,211,102,0.5); text-decoration: none; transition: all 0.3s; animation: fwa 3s ease-in-out infinite; }
+#wa:hover { animation: none; transform: scale(1.12); box-shadow: 0 6px 35px rgba(37,211,102,0.7); }
+#wa svg { width: 32px; height: 32px; fill: white; }
+.wa-tt { position: absolute; right: 74px; background: rgba(10,10,10,0.95); border: 1px solid rgba(37,211,102,0.3); color: white; padding: 8px 14px; border-radius: 10px; font-size: 13px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+#wa:hover .wa-tt { opacity: 1; }
+@keyframes fwa { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+
+/* NOTIFICATION */
+.notif { position: fixed; top: 88px; right: 20px; background: var(--card); border: 1px solid rgba(232,93,4,0.35); border-radius: 14px; padding: 14px 22px; font-size: 14px; z-index: 9999; display: none; box-shadow: 0 0 40px rgba(232,93,4,0.15); animation: nfin 0.4s ease; max-width: 340px; }
+@keyframes nfin { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ANIMATIONS */
+@keyframes fiu { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.fi2 { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.fi2.vis { opacity: 1; transform: translateY(0); }
+
+/* RESPONSIVE */
+@media (max-width: 1200px) { .flgrid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1024px) {
+  .sgrid { grid-template-columns: repeat(2, 1fr); }
+  .r-grid { grid-template-columns: repeat(2, 1fr); }
+  .fg2 { grid-template-columns: 1.5fr 1fr 1fr; }
+  .hero-spline { width: 55%; right: -40px; }
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  #navbar { padding: 0 24px; }
+  .hero-content { padding: 0 24px; max-width: 100%; }
+  .hero-spline { opacity: 0.22; width: 100%; right: 0; }
+  .hero-overlay { background: linear-gradient(to right, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.75) 100%); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); padding: 24px; }
+  .section { padding: 60px 24px; }
+  .sgrid { grid-template-columns: 1fr; }
+  .r-grid { grid-template-columns: 1fr; }
+  .pgrid { padding: 24px; }
+  .pc { padding: 16px 24px; }
+  .slgrid { padding: 24px; grid-template-columns: 1fr; }
+  footer { padding: 40px 24px 0; }
+  .fg2 { grid-template-columns: 1fr; }
+  .flgrid { grid-template-columns: repeat(2, 1fr); }
+  .bs-opts { grid-template-columns: 1fr; padding: 0 24px; }
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .md { padding: 32px 24px; }
+  .ph { padding: 60px 24px 40px; }
+  .ds { padding: 40px 24px; }
+  .t-section { padding: 60px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <img class="loader-logo" src="images/logo-new.png" alt="Virk Tech">
+  <div class="loader-bar-wrap"><div class="loader-bar" id="lb"></div></div>
+  <div class="loader-pct" id="lp">0%</div>
+  <div class="loader-msg" id="lm"></div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<nav id="navbar">
+  <a class="nav-logo" href="#" onclick="sp('home')">
+    <img src="images/logo-new.png" alt="Virk Tech Solutions">
+  </a>
+  <ul class="nav-links">
+    <li><a onclick="sp('home')" class="active" id="nh">Home</a></li>
+    <li><a onclick="sp('repair')" id="nr">Repairing</a></li>
+    <li><a onclick="sp('buysell')" id="nbs">Buy &amp; Sell</a></li>
+    <li><a onclick="sp('products')" id="np">Shop</a></li>
+    <li><a onclick="sp('locator')" id="nl">Store Locator</a></li>
+    <li><a href="tel:+447762121336" class="nav-cta">&#128222; Call Us</a></li>
+  </ul>
+  <div class="hamburger" onclick="tmn()"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="mnav" id="mnav">
+  <a href="#" onclick="sp('home');tmn()">&#127968; Home</a>
+  <a href="#" onclick="sp('repair');tmn()">&#128295; Repairing</a>
+  <a href="#" onclick="sp('buysell');tmn()">&#128241; Buy &amp; Sell</a>
+  <a href="#" onclick="sp('products');tmn()">&#128717; Shop</a>
+  <a href="#" onclick="sp('locator');tmn()">&#128205; Store Locator</a>
+  <a href="tel:+447762121336">&#128222; Call: +44 7762 121336</a>
+</div>
+
+<a id="wa" href="https://wa.me/447762121336" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <span class="wa-tt">Chat on WhatsApp</span>
+</a>
+
+<!-- ===== HOME ===== -->
+<div id="pg-home" class="pg active">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-arc"></div>
+    <div class="hero-content">
+      <div class="hero-pill">South East London's Tech Experts</div>
+      <h1 class="hero-h1">Expert Tech<br><span class="hl">Repair &amp; Solutions</span></h1>
+      <p class="hero-p">Six convenient London locations. Expert technicians. Lightning-fast repairs for every device — from iPhones to laptops and everything in between.</p>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="sp('repair')">&#128295;&nbsp; Book a Repair</button>
+        <button class="btn-s" onclick="sp('locator')">&#128205; Find a Store</button>
+      </div>
+    </div>
+    <div class="hero-spline">
+      <iframe src="https://my.spline.design/nexbotrobotcharacterconcept-BLNook742cCjTbILC5TOaz9U/" frameborder="0" width="100%" height="100%"></iframe>
+    </div>
+    <div class="hero-overlay"></div>
+  </section>
+
+  <div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
+
+  <div class="stats-bar">
+    <div class="si"><span class="si-num">10+</span><span class="si-lbl">Years Experience</span></div>
+    <div class="si"><span class="si-num">6</span><span class="si-lbl">London Locations</span></div>
+    <div class="si"><span class="si-num">50K+</span><span class="si-lbl">Devices Repaired</span></div>
+    <div class="si"><span class="si-num">98%</span><span class="si-lbl">Satisfaction Rate</span></div>
+  </div>
+
+  <div class="section">
+    <div class="sh fi2">
+      <span class="stag">What We Do</span>
+      <h2 class="st">Expert Tech Services,<br>All Under One Roof</h2>
+      <p class="ss">From mobile repairs to key cutting — Virk Tech covers everything in South East London.</p>
+    </div>
+    <div class="sgrid">
+      <div class="sc2 fi2" onclick="sp('repair')"><div class="sc2-ico">&#128241;</div><div class="sc2-title">Mobile &amp; Tech Repairs</div><p class="sc2-desc">Screen replacements, battery swaps, water damage recovery. Same-day service available at all locations.</p><div class="sc2-link">Book Repair <span>&#8594;</span></div></div>
+      <div class="sc2 fi2" onclick="sp('buysell')"><div class="sc2-ico">&#128260;</div><div class="sc2-title">Buy &amp; Sell Devices</div><p class="sc2-desc">Sell your old device for top cash or grab a quality refurbished phone at unbeatable prices. All tested and certified.</p><div class="sc2-link">Get a Quote <span>&#8594;</span></div></div>
+      <div class="sc2 fi2" onclick="sp('products')"><div class="sc2-ico">&#128717;</div><div class="sc2-title">Accessories &amp; Shop</div><p class="sc2-desc">Premium cases, chargers, screen protectors, vapes, headphones and much more. Huge selection in-store.</p><div class="sc2-link">Browse Shop <span>&#8594;</span></div></div>
+      <div class="sc2 fi2" onclick="sp('repair')"><div class="sc2-ico">&#128190;</div><div class="sc2-title">Data Recovery</div><p class="sc2-desc">Lost precious photos and files? Our skilled technicians work diligently to recover your irreplaceable data.</p><div class="sc2-link">Learn More <span>&#8594;</span></div></div>
+      <div class="sc2 fi2" onclick="sp('locator')"><div class="sc2-ico">&#128273;</div><div class="sc2-title">Key Cutting</div><p class="sc2-desc">Professional in-house key cutting and duplication at select stores. Duplicates made within minutes.</p><div class="sc2-link">Find Locations <span>&#8594;</span></div></div>
+      <div class="sc2 fi2" onclick="sp('products')"><div class="sc2-ico">&#128168;</div><div class="sc2-title">Vapes &amp; Accessories</div><p class="sc2-desc">Top vape brands and your favourite flavours. The best selection in South East London, new stock arriving regularly.</p><div class="sc2-link">Visit Store <span>&#8594;</span></div></div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section about-grid">
+      <div class="fi2">
+        <span class="stag">About Us</span>
+        <h2 class="st">Trusted for Over<br>a Decade in London</h2>
+        <p style="color:var(--txt2);line-height:1.85;margin-bottom:18px;font-weight:300;">With over a decade of dedicated service, Virk Tech Solutions is South East London's go-to destination for all things electronic. We specialise in mobile repairs, laptops, iPads, tablets, and an array of gadgets.</p>
+        <p style="color:var(--txt2);line-height:1.85;font-weight:300;">Our expertise extends beyond repairs to a carefully curated selection of accessories and the latest tech products — plus unique offerings like key cutting, vapes, and shoe repairs.</p>
+        <div class="af-grid">
+          <div class="af"><div class="af-ico">&#9889;</div><div class="af-title">Same-Day Repairs</div><div class="af-desc">Most repairs completed same day</div></div>
+          <div class="af"><div class="af-ico">&#128737;</div><div class="af-title">Warranty Included</div><div class="af-desc">All repairs come with warranty</div></div>
+          <div class="af"><div class="af-ico">&#128142;</div><div class="af-title">Premium Parts</div><div class="af-desc">Only quality replacement parts</div></div>
+          <div class="af"><div class="af-ico">&#128205;</div><div class="af-title">6 Locations</div><div class="af-desc">Across South East London</div></div>
+        </div>
+      </div>
+      <div class="about-vis fi2">
+        <img class="about-logo" src="images/logo-new.png" alt="Virk Tech Solutions">
+        <p style="margin-top:28px;color:var(--txt2);font-size:15px;line-height:1.8;position:relative;">South East London's<br><strong style="color:var(--txt);font-size:20px;">Most Trusted Tech Brand</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="t-section">
+    <div style="text-align:center;margin-bottom:60px;" class="fi2">
+      <span class="stag">Customer Reviews</span>
+      <h2 class="st" style="margin-bottom:8px;">What Our Customers Say</h2>
+      <p style="color:var(--txt2);font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:300;"><span style="color:var(--acc);font-size:18px;">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 4.8 / 5 rating across all London locations</p>
+    </div>
+    <div class="r-grid" id="rg"></div>
+  </div>
+</div>
+
+<!-- ===== REPAIR ===== -->
+<div id="pg-repair" class="pg">
+  <div class="ph">
+    <span class="stag">Book a Repair</span>
+    <h1 class="st">Device Repair Booking</h1>
+    <p style="color:var(--txt2);max-width:500px;margin:12px 0 0;line-height:1.7;font-weight:300;">Select your device and repair type, then book an appointment at your preferred branch.</p>
+  </div>
+  <div class="ds">
+    <div style="margin-bottom:48px;">
+      <span class="sl">Step 1 &mdash; Select Your Device Brand</span>
+      <div class="dmakes" id="dmakes">
+        <div class="dmc" onclick="selMake(this,'Apple')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"><span class="dmc-lbl">Apple</span></div>
+        <div class="dmc" onclick="selMake(this,'Samsung')"><img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Samsung_Logo.svg" alt="Samsung"><span class="dmc-lbl">Samsung</span></div>
+        <div class="dmc" onclick="selMake(this,'Google')"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" style="width:54px;height:auto;"><span class="dmc-lbl">Google</span></div>
+        <div class="dmc" onclick="selMake(this,'Huawei')"><img src="https://upload.wikimedia.org/wikipedia/en/0/04/Huawei_Standard_logo.svg" alt="Huawei"><span class="dmc-lbl">Huawei</span></div>
+        <div class="dmc" onclick="selMake(this,'OnePlus')"><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/OnePlus_logo.svg" alt="OnePlus"><span class="dmc-lbl">OnePlus</span></div>
+        <div class="dmc" onclick="selMake(this,'Sony')"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg" alt="Sony"><span class="dmc-lbl">Sony</span></div>
+        <div class="dmc" onclick="selMake(this,'Xiaomi')"><img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Xiaomi_logo.svg" alt="Xiaomi"><span class="dmc-lbl">Xiaomi</span></div>
+        <div class="dmc" onclick="selMake(this,'Motorola')"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/Motorola_Logo_2015.svg" alt="Motorola"><span class="dmc-lbl">Motorola</span></div>
+        <div class="dmc" onclick="selMake(this,'Nokia')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/02/Nokia_wordmark.svg" alt="Nokia"><span class="dmc-lbl">Nokia</span></div>
+        <div class="dmc" onclick="selMake(this,'OPPO')"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/OPPO_LOGO_2019.svg" alt="OPPO"><span class="dmc-lbl">OPPO</span></div>
+        <div class="dmc" onclick="selMake(this,'Realme')"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Realme_logo.svg" alt="Realme"><span class="dmc-lbl">Realme</span></div>
+        <div class="dmc" onclick="selMake(this,'Nothing')"><img src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Nothing_logo.png" alt="Nothing" style="border-radius:3px;background:#fff;padding:2px;"><span class="dmc-lbl">Nothing</span></div>
+        <div class="dmc" onclick="selMake(this,'iPad/Tablet')"><img src="https://cdn-icons-png.flaticon.com/512/2344/2344786.png" alt="iPad"><span class="dmc-lbl">iPad/Tablet</span></div>
+        <div class="dmc" onclick="selMake(this,'Laptop')"><img src="https://cdn-icons-png.flaticon.com/512/3474/3474360.png" alt="Laptop"><span class="dmc-lbl">Laptop</span></div>
+        <div class="dmc" onclick="selMake(this,'Console')"><img src="https://cdn-icons-png.flaticon.com/512/686/686589.png" alt="Console"><span class="dmc-lbl">Console</span></div>
+        <div class="dmc" onclick="selMake(this,'Other')"><img src="https://cdn-icons-png.flaticon.com/512/1178/1178479.png" alt="Other"><span class="dmc-lbl">Other</span></div>
+      </div>
+    </div>
+    <div class="msel" id="msel">
+      <span class="sl">Step 2 &mdash; Enter Your Exact Model</span>
+      <input type="text" class="minp" id="minp" placeholder="e.g. iPhone 15 Pro Max, Galaxy S24 Ultra..." oninput="onMI()">
+      <p class="mhint">&#128161; Type your device model exactly &mdash; e.g. "iPhone 14 Pro 256GB" or "Samsung Galaxy A54 5G"</p>
+    </div>
+    <div class="msel" id="rts" style="margin-top:40px;">
+      <span class="sl">Step 3 &mdash; What Needs Repairing?</span>
+      <div class="rt-grid">
+        <button class="rtb" onclick="selRT(this,'Screen Replacement')"><span class="ri">&#128187;</span>Screen Replacement</button>
+        <button class="rtb" onclick="selRT(this,'Battery Replacement')"><span class="ri">&#128267;</span>Battery Replacement</button>
+        <button class="rtb" onclick="selRT(this,'Water Damage')"><span class="ri">&#128166;</span>Water Damage</button>
+        <button class="rtb" onclick="selRT(this,'Charging Port')"><span class="ri">&#128268;</span>Charging Port</button>
+        <button class="rtb" onclick="selRT(this,'Camera Repair')"><span class="ri">&#128247;</span>Camera Repair</button>
+        <button class="rtb" onclick="selRT(this,'Back Glass')"><span class="ri">&#9641;</span>Back Glass</button>
+        <button class="rtb" onclick="selRT(this,'Speaker / Mic')"><span class="ri">&#128266;</span>Speaker / Mic</button>
+        <button class="rtb" onclick="selRT(this,'Diagnostics')"><span class="ri">&#128300;</span>Diagnostics</button>
+      </div>
+    </div>
+    <button class="proc-btn" id="pb" disabled onclick="openRM()">&#128197;&nbsp;&nbsp;Book Appointment</button>
+  </div>
+</div>
+
+<!-- ===== BUY SELL ===== -->
+<div id="pg-buysell" class="pg">
+  <div class="ph">
+    <span class="stag">Buy &amp; Sell</span>
+    <h1 class="st">Trade Your Device</h1>
+    <p style="color:var(--txt2);max-width:500px;margin:12px 0 0;line-height:1.7;font-weight:300;">Sell your old device for top cash, or find your next phone at a great price.</p>
+  </div>
+  <div class="bs-opts">
+    <div class="bso" onclick="openBS('sell')"><span class="bso-ico">&#128176;</span><div class="bso-title">Sell Your Device</div><p class="bso-desc">Get competitive cash offers for your old phone, laptop, or tablet. We beat most other offers.</p></div>
+    <div class="bso" onclick="openBS('buy')"><span class="bso-ico">&#128717;</span><div class="bso-title">Buy a Device</div><p class="bso-desc">Browse our selection of quality refurbished and new devices. All tested, certified, and ready to go.</p></div>
+  </div>
+  <div class="section" style="padding-top:20px;">
+    <div class="sh fi2"><span class="stag">Why Choose Us</span><h2 class="st">The Smarter Way to Trade</h2></div>
+    <div class="sgrid">
+      <div class="sc2 fi2"><div class="sc2-ico">&#9889;</div><div class="sc2-title">Instant Quotes</div><p class="sc2-desc">Get a price for your device within minutes. No waiting, no hassle — fast, fair offers from our expert team.</p><div class="sc2-link" onclick="openBS('sell')">Get Quote <span>&#8594;</span></div></div>
+      <div class="sc2 fi2"><div class="sc2-ico">&#128274;</div><div class="sc2-title">Secure &amp; Safe</div><p class="sc2-desc">All transactions handled securely in-store with full data wipe included at no extra cost.</p><div class="sc2-link" onclick="sp('locator')">Find Us <span>&#8594;</span></div></div>
+      <div class="sc2 fi2"><div class="sc2-ico">&#128183;</div><div class="sc2-title">Best Prices</div><p class="sc2-desc">We offer competitive market rates and will try to beat any other genuine offer you have received.</p><div class="sc2-link" onclick="openBS('sell')">Sell Now <span>&#8594;</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PRODUCTS ===== -->
+<div id="pg-products" class="pg">
+  <div class="ph">
+    <span class="stag">Online Shop</span>
+    <h1 class="st">Tech Accessories &amp; More</h1>
+    <p style="color:var(--txt2);max-width:500px;margin:12px 0 0;line-height:1.7;font-weight:300;">Browse our curated selection of premium tech accessories at great prices.</p>
+  </div>
+  <div class="pc">
+    <input class="sinput" type="text" id="psearch" placeholder="&#128269;  Search products..." oninput="fp()">
+    <select class="fsel" id="pcat" onchange="fp()">
+      <option value="">All Categories</option>
+      <option value="Cases">Cases &amp; Protection</option>
+      <option value="Charging">Charging &amp; Power</option>
+      <option value="Audio">Audio</option>
+      <option value="Accessories">Accessories</option>
+      <option value="Computing">Computing</option>
+    </select>
+    <select class="fsel" id="psort" onchange="fp()">
+      <option value="default">Sort: Default</option>
+      <option value="pa">Price: Low &#8594; High</option>
+      <option value="pd">Price: High &#8594; Low</option>
+      <option value="name">Name A&#8211;Z</option>
+    </select>
+    <span id="pcnt" style="color:var(--muted);font-size:13px;margin-left:auto;"></span>
+  </div>
+  <div class="pgrid" id="pgrid"></div>
+</div>
+
+<!-- ===== LOCATOR ===== -->
+<div id="pg-locator" class="pg">
+  <div class="ph" style="text-align:center;">
+    <span class="stag">Find Us</span>
+    <h1 class="st">Our London Locations</h1>
+    <p style="color:var(--txt2);max-width:520px;margin:12px auto 0;line-height:1.7;font-weight:300;">Six convenient locations across South East London. Tap any card to open Google Maps for instant directions.</p>
+  </div>
+  <div class="slgrid" id="slgrid"></div>
+</div>
+
+<!-- ===== REPAIR MODAL ===== -->
+<div class="mo" id="rm">
+  <div class="md">
+    <button class="mc" onclick="cm('rm')">&#215;</button>
+    <div id="rfs">
+      <div class="mt">&#128197; Book Your Appointment</div>
+      <p class="msub" id="rmst">Fill in your details and we'll confirm your repair slot.</p>
+      <div class="fg"><label class="fl">Full Name *</label><input class="fi" type="text" id="rn" placeholder="John Smith"></div>
+      <div class="fg"><label class="fl">Email Address *</label><input class="fi" type="email" id="re" placeholder="john@example.com"></div>
+      <div class="fg"><label class="fl">Phone Number *</label><input class="fi" type="tel" id="rph" placeholder="+44 7xxx xxxxxx"></div>
+      <div class="fg"><label class="fl">Preferred Date *</label><input class="fi" type="date" id="rd"></div>
+      <div class="fg"><label class="fl">Preferred Time</label><select class="fs" id="rt"><option>09:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>01:00 PM</option><option>02:00 PM</option><option>03:00 PM</option><option>04:00 PM</option><option>05:00 PM</option></select></div>
+      <div class="fg"><label class="fl">Preferred Branch</label><select class="fs" id="rb"><option>Belvedere — 25 Nuxley Road, DA17 5JE</option><option>VIRK TECH (New Eltham Mobiles &amp; Vapes) — 371 Footscray Road, SE9 2DR</option><option>Sidcup — 69a High Street, DA14 6DW</option><option>VIRK TECH (New Eltham Key Cutting) — 1 Station Approach, SE9 2AB</option><option>Woolwich — 1B Woolwich New Road, SE18 6EX</option><option>Blackfen — Blackfen Road, DA15</option></select></div>
+      <div class="fg"><label class="fl">Additional Notes</label><textarea class="fta" id="rno" placeholder="Any additional info about the issue..."></textarea></div>
+      <button class="msub-btn" onclick="subR()">Confirm Booking &#10003;</button>
+    </div>
+    <div class="sst" id="rs"><div class="ssi">&#9989;</div><h3 style="font-size:24px;font-weight:900;margin-bottom:10px;">Booking Confirmed!</h3><p style="color:var(--txt2);line-height:1.7;">We've received your request. A confirmation will be sent to your email. See you soon!</p></div>
+  </div>
+</div>
+
+<!-- ===== BS MODAL ===== -->
+<div class="mo" id="bsm">
+  <div class="md">
+    <button class="mc" onclick="cm('bsm')">&#215;</button>
+    <div id="bsfs">
+      <div class="mt" id="bst">&#128176; Sell Your Device</div>
+      <p class="msub" id="bssub">Tell us about your device and we'll get back to you with an offer.</p>
+      <div class="fg"><label class="fl">Full Name *</label><input class="fi" type="text" id="bn" placeholder="John Smith"></div>
+      <div class="fg"><label class="fl">Email Address *</label><input class="fi" type="email" id="be" placeholder="john@example.com"></div>
+      <div class="fg"><label class="fl">Phone Number *</label><input class="fi" type="tel" id="bph" placeholder="+44 7xxx xxxxxx"></div>
+      <div class="fg"><label class="fl">Device Brand</label><select class="fs" id="bbr"><option>Apple iPhone</option><option>Samsung Galaxy</option><option>Google Pixel</option><option>Huawei</option><option>OnePlus</option><option>Xiaomi</option><option>Motorola</option><option>Nokia</option><option>iPad/Tablet</option><option>Laptop</option><option>Other</option></select></div>
+      <div class="fg"><label class="fl">Device Model</label><input class="fi" type="text" id="bmo" placeholder="e.g. iPhone 14 Pro, 256GB, Midnight"></div>
+      <div class="fg"><label class="fl">Device Condition</label><select class="fs" id="bco"><option>Excellent — Like New</option><option>Good — Minor Scratches</option><option>Fair — Visible Wear</option><option>Poor — Damaged / Cracked</option></select></div>
+      <div class="fg"><label class="fl">Additional Information</label><textarea class="fta" id="bno" placeholder="Any other details, accessories included, box, etc..."></textarea></div>
+      <button class="msub-btn" onclick="subBS()">Submit Request &#10003;</button>
+    </div>
+    <div class="sst" id="bss"><div class="ssi">&#127881;</div><h3 style="font-size:24px;font-weight:900;margin-bottom:10px;">Request Submitted!</h3><p style="color:var(--txt2);line-height:1.7;">We've received your request and will be in touch shortly with a quote.</p></div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="fg2">
+    <div class="fbrand">
+      <img src="images/logo-new.png" alt="Virk Tech">
+      <p>South East London's premier tech repair and solutions specialists. Expert repairs, quality products, and outstanding service since 2014.</p>
+      <div class="fsoc">
+        <a class="fsocb" href="https://wa.me/447762121336" target="_blank">&#128172;</a>
+        <a class="fsocb" href="tel:+447762121336">&#128222;</a>
+        <a class="fsocb" href="https://www.facebook.com" target="_blank">&#128203;</a>
+        <a class="fsocb" href="https://www.instagram.com" target="_blank">&#128247;</a>
+      </div>
+    </div>
+    <div class="fcol">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a onclick="sp('home')">Home</a></li>
+        <li><a onclick="sp('repair')">Book a Repair</a></li>
+        <li><a onclick="sp('buysell')">Buy &amp; Sell</a></li>
+        <li><a onclick="sp('products')">Shop</a></li>
+        <li><a onclick="sp('locator')">Store Locator</a></li>
+        <li><a href="tel:+447762121336">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="fcol">
+      <h4>Services</h4>
+      <ul>
+        <li><a onclick="sp('repair')">Screen Replacement</a></li>
+        <li><a onclick="sp('repair')">Battery Replacement</a></li>
+        <li><a onclick="sp('repair')">Water Damage Repair</a></li>
+        <li><a onclick="sp('repair')">Data Recovery</a></li>
+        <li><a onclick="sp('locator')">Key Cutting</a></li>
+        <li><a onclick="sp('products')">Vapes &amp; E-Liquids</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="flband">
+    <h4>Our Locations &mdash; Click to Open Google Maps</h4>
+    <div class="flgrid" id="flg"></div>
+  </div>
+  <div class="fbot">
+    <p>&#169; 2025 Virk Tech Solutions Ltd. All rights reserved.</p>
+    <p><a href="/admin" style="color:var(--muted);text-decoration:none;font-size:12px;">Admin Login</a></p>
+  </div>
+</footer>
+
+<script>
+const STORES = [
+  { name:"Virk Tech Solutions — Belvedere", short:"Belvedere", type:"Mobiles, Repairs, Vapes & Keys", addr:"25 Nuxley Road, Belvedere, DA17 5JE", phone:"07824 528888", maps:"https://www.google.com/maps/search/?api=1&query=25+Nuxley+Road+Belvedere+DA17+5JE" },
+  { name:"VIRK TECH (New Eltham Mobiles & Vapes)", short:"New Eltham", type:"Mobiles, Repairs & Vapes", addr:"371 Footscray Road, New Eltham, SE9 2DR", phone:"07411 321131", maps:"https://www.google.com/maps/search/?api=1&query=371+Footscray+Road+New+Eltham+SE9+2DR" },
+  { name:"Virk Tech London — Sidcup", short:"Sidcup", type:"Mobiles, Repairs, Vapes & Keys", addr:"69a High Street, Sidcup, DA14 6DW", phone:"07766 623999", maps:"https://www.google.com/maps/search/?api=1&query=69a+High+Street+Sidcup+DA14+6DW" },
+  { name:"VIRK TECH (New Eltham Key Cutting)", short:"Eltham Keys", type:"Key Cutting & Watch Repairs", addr:"1 Station Approach, Footscray Rd, New Eltham, SE9 2AB", phone:"07522 657777", maps:"https://www.google.com/maps/search/?api=1&query=1+Station+Approach+New+Eltham+SE9+2AB" },
+  { name:"Smart Phone Repairs — Woolwich", short:"Woolwich", type:"Mobiles, Repairs & Vapes", addr:"1B Woolwich New Road, London, SE18 6EX", phone:"07572 380092", maps:"https://www.google.com/maps/search/?api=1&query=1B+Woolwich+New+Road+Woolwich+SE18+6EX" },
+  { name:"Virk Tech & Keys — Blackfen", short:"Blackfen", type:"Mobiles, Vapes, Keys & Shoes", addr:"Blackfen Road, Sidcup, DA15", phone:"07762 121336", maps:"https://www.google.com/maps/search/?api=1&query=Blackfen+Road+Sidcup+DA15" }
+];
+
+const REVIEWS = [
+  { name:"Amir Hassan", branch:"Belvedere Branch", date:"2 weeks ago", rating:5, text:"Brought my shattered iPhone 14 Pro in and they had it fixed within 2 hours. The screen looks brand new and the price was very fair. Won't go anywhere else.", i:"A", c:"#e85d04" },
+  { name:"Sarah K.", branch:"Sidcup Branch", date:"1 month ago", rating:5, text:"Sold my old Samsung here and got a brilliant price, better than any buyback site online. The staff were incredibly helpful and sorted everything quickly.", i:"S", c:"#ff6b1a" },
+  { name:"Marcus J.", branch:"Woolwich Branch", date:"3 weeks ago", rating:5, text:"My Galaxy S23 had water damage and another shop said it was beyond repair. Virk Tech recovered all my data AND fixed it! Absolutely saved the day.", i:"M", c:"#c44d00" },
+  { name:"Priya Sharma", branch:"New Eltham Branch", date:"5 days ago", rating:5, text:"Battery replacement on my iPhone done in under an hour. Very professional, transparent pricing and they fitted a free screen protector too. 5 stars!", i:"P", c:"#ff9a3c" },
+  { name:"Daniel O.", branch:"Blackfen Branch", date:"1 week ago", rating:5, text:"Got keys cut and picked up a new vape at the same time. Love the one-stop-shop concept. Staff are always friendly and knowledgeable. My local go-to!", i:"D", c:"#e85d04" },
+  { name:"Fatima A.", branch:"Belvedere Branch", date:"2 months ago", rating:5, text:"Bought a refurbished iPhone 13 and it's been absolutely perfect. Came with a warranty too which gave great peace of mind. Fantastic value for money!", i:"F", c:"#ff6b1a" }
+];
+
+const PRODS = [
+  { id:1,name:"Universal Magnetic Car Phone Holder — Air Vent",cat:"Accessories",price:11.99,e:"&#128665;",img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { id:2,name:"Wireless Bluetooth FM Transmitter MP3 Player",cat:"Accessories",price:15.99,e:"&#127925;",img:"https://images.unsplash.com/photo-1608375064782-6085d4e1a6e6?w=400&q=80" },
+  { id:3,name:"Lightning to HDMI Cable — 1080p HD for Apple",cat:"Accessories",price:16.99,e:"&#128250;",img:"https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+  { id:4,name:"Wireless 2.4G Mouse with USB Dongle",cat:"Computing",price:9.99,e:"&#128433;",img:"https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80" },
+  { id:5,name:"Dual USB Travel Charger with Foldable Adapter",cat:"Charging",price:12.99,e:"&#9889;",img:"https://images.unsplash.com/photo-1628815114880-8aa0b9e2c2a4?w=400&q=80" },
+  { id:6,name:"Apple Lightning to 3.5mm Headphone Adapter",cat:"Audio",price:9.99,e:"&#127911;",img:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&q=80" },
+  { id:7,name:"50000mAh Portable Power Bank External Battery",cat:"Charging",price:29.99,e:"&#128267;",img:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&q=80" },
+  { id:8,name:"Bluetooth Mechanical Feel Gaming Mouse",cat:"Computing",price:9.99,e:"&#128433;",img:"https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&q=80" },
+  { id:9,name:"iPhone 15/14/13 Tempered Glass Screen Protector",cat:"Cases",price:7.99,e:"&#128241;",img:"https://images.unsplash.com/photo-1604881991720-f91add269bed?w=400&q=80" },
+  { id:10,name:"Samsung Galaxy S24 Ultra Premium Leather Case",cat:"Cases",price:14.99,e:"&#128737;",img:"https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&q=80" },
+  { id:11,name:"20W USB-C PD Fast Charging Wall Adapter",cat:"Charging",price:13.99,e:"&#128268;",img:"https://images.unsplash.com/photo-1588361861040-ac9b1018f6d5?w=400&q=80" },
+  { id:12,name:"Wireless Earbuds Bluetooth 5.3 — 36hr Battery",cat:"Audio",price:24.99,e:"&#127911;",img:"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80" },
+  { id:13,name:"USB-C to USB-C Braided Cable 2m — 100W",cat:"Charging",price:8.99,e:"&#128279;",img:"https://images.unsplash.com/photo-1592890288564-76628a30a657?w=400&q=80" },
+  { id:14,name:"MagSafe Compatible Wireless Charging Pad 15W",cat:"Charging",price:19.99,e:"&#128260;",img:"https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&q=80" },
+  { id:15,name:"Over-Ear Wireless Headphones — 60hr Playtime",cat:"Audio",price:34.99,e:"&#127911;",img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80" },
+  { id:16,name:"Universal Adjustable Aluminium Phone Stand",cat:"Accessories",price:16.99,e:"&#128208;",img:"https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=400&q=80" },
+  { id:17,name:"Privacy Screen Protector — Anti-Spy Glass",cat:"Cases",price:9.99,e:"&#128274;",img:"https://images.unsplash.com/photo-1604881991720-f91add269bed?w=400&q=80" },
+  { id:18,name:"Portable Bluetooth Speaker — Waterproof IPX7",cat:"Audio",price:29.99,e:"&#128226;",img:"https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&q=80" },
+  { id:19,name:'Laptop Sleeve 15.6" — Premium Neoprene Case',cat:"Computing",price:19.99,e:"&#128188;",img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80" },
+  { id:20,name:"Type-C 7-in-1 USB Multi-Port Docking Station",cat:"Computing",price:34.99,e:"&#128268;",img:"https://images.unsplash.com/photo-1563770660941-20978e870e26?w=400&q=80" }
+];
+
+// STATE
+let sMake=null, sModel=null, sRT=null, bsT="sell";
+
+// LOADER
+window.addEventListener("load",()=>{
+  const bar=document.getElementById("lb"), pct=document.getElementById("lp"), msg=document.getElementById("lm"), ldr=document.getElementById("loader");
+  let p=0;
+  const iv=setInterval(()=>{
+    if(p<72) p+=Math.random()*11+5;
+    else if(p<90) p+=Math.random()*2.5+0.4;
+    else if(p<100) p+=0.22;
+    const c=Math.min(p,100); bar.style.width=c+"%"; pct.textContent=Math.floor(c)+"%";
+    if(c>=100){
+      clearInterval(iv);
+      setTimeout(()=>{ msg.innerHTML="Hello..."; msg.classList.add("vis");
+        setTimeout(()=>{ msg.innerHTML='Welcome to <span>Virk Tech</span>';
+          setTimeout(()=>{ ldr.style.transition="opacity 0.7s ease"; ldr.style.opacity="0"; setTimeout(()=>ldr.style.display="none",700); },1400);
+        },1600);
+      },300);
+    }
+  },85);
+});
+
+// TICKER
+(function(){
+  const items=["Same-Day Repairs","Screen Replacements","Battery Repairs","Water Damage Recovery","Data Recovery","Key Cutting","Buy & Sell Devices","Vapes & Accessories","6 London Locations","Trusted Since 2014"];
+  const d=[...items,...items];
+  document.getElementById("ticker").innerHTML=d.map(i=>`<span class="ticker-item">${i}<span class="ticker-dot"></span></span>`).join("");
+})();
+
+// NAV
+function sp(page){
+  document.querySelectorAll(".pg").forEach(s=>s.classList.remove("active"));
+  document.getElementById("pg-"+page).classList.add("active");
+  document.querySelectorAll(".nav-links a[id^=n]").forEach(a=>a.classList.remove("active"));
+  const nel=document.getElementById("n"+page[0]+(page==="buysell"?"bs":page==="locator"?"l":page==="products"?"p":page==="repair"?"r":""));
+  if(nel)nel.classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(page==="products")fp();
+  if(page==="locator")renderSL();
+  setTimeout(ofi,100);
+}
+function tmn(){ document.getElementById("mnav").classList.toggle("open"); }
+window.addEventListener("scroll",()=>document.getElementById("navbar").classList.toggle("sc",scrollY>20));
+
+// OBSERVE
+function ofi(){
+  const ob=new IntersectionObserver((es)=>es.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add("vis"),i*80); },{threshold:0.1}));
+  document.querySelectorAll(".fi2:not(.vis)").forEach(el=>ob.observe(el));
+}
+ofi();
+
+// REVIEWS
+(function(){
+  document.getElementById("rg").innerHTML=REVIEWS.map(r=>`
+  <div class="r-card fi2">
+    <div class="r-badge">Google Review</div>
+    <div class="r-quote">"</div>
+    <div class="r-stars">${"<span>&#9733;</span>".repeat(r.rating)}</div>
+    <p class="r-text">${r.text}</p>
+    <div class="r-author">
+      <div class="r-av" style="background:linear-gradient(135deg,${r.c},#ff9a3c)">${r.i}</div>
+      <div><div class="r-name">${r.name}</div><div class="r-meta">${r.branch} &middot; ${r.date}</div></div>
+    </div>
+  </div>`).join("");
+  setTimeout(ofi,100);
+})();
+
+// PRODUCTS
+function fp(){
+  const s=document.getElementById("psearch").value.toLowerCase();
+  const c=document.getElementById("pcat").value;
+  const so=document.getElementById("psort").value;
+  let f=PRODS.filter(p=>p.name.toLowerCase().includes(s)&&(!c||p.cat===c));
+  if(so==="pa")f.sort((a,b)=>a.price-b.price);
+  else if(so==="pd")f.sort((a,b)=>b.price-a.price);
+  else if(so==="name")f.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById("pcnt").textContent=f.length+" product"+(f.length!==1?"s":"");
+  document.getElementById("pgrid").innerHTML=f.map(p=>`
+  <div class="pcard">
+    <div class="pimg"><span class="efb">${p.e}</span><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'"></div>
+    <div class="pinfo">
+      <span class="pbadge">${p.cat}</span>
+      <div class="pname">${p.name}</div>
+      <div class="pprice">£${p.price.toFixed(2)}</div>
+      <button class="pcta" onclick="sn('&#128717; Visit any store to purchase!')">Buy In-Store</button>
+    </div>
+  </div>`).join("");
+}
+
+// STORES
+function renderSL(){
+  document.getElementById("slgrid").innerHTML=STORES.map(s=>`
+  <div class="slcard">
+    <a href="${s.maps}" target="_blank" rel="noopener">
+      <div class="smap"><span class="smap-ico">&#128205;</span><span class="smap-lbl">Open Google Maps</span><span class="smap-sub">${s.short}</span></div>
+    </a>
+    <div class="sinfo">
+      <div class="sname">${s.name}</div>
+      <div class="stype">${s.type}</div>
+      <div class="saddr">&#128205; ${s.addr}</div>
+      <a class="sphone" href="tel:${s.phone.replace(/\s/g,"")}">&#128222; ${s.phone}</a>
+      <div class="sacts">
+        <a class="sabt p" href="${s.maps}" target="_blank" rel="noopener">&#128506; Get Directions</a>
+        <a class="sabt" href="tel:${s.phone.replace(/\s/g,"")}">&#128222; Call</a>
+      </div>
+    </div>
+  </div>`).join("");
+}
+
+// FOOTER LOCS
+(function(){
+  document.getElementById("flg").innerHTML=STORES.map(s=>`
+  <a class="fli" href="${s.maps}" target="_blank" rel="noopener">
+    <div class="fli-name">${s.short} Branch</div>
+    <div class="fli-addr">${s.addr}</div>
+    <div class="fli-phone">${s.phone}</div>
+  </a>`).join("");
+})();
+
+// REPAIR
+function selMake(el,make){
+  sMake=make; sModel=null; sRT=null;
+  document.getElementById("pb").disabled=true;
+  document.querySelectorAll(".dmc").forEach(c=>c.classList.remove("sel"));
+  el.classList.add("sel");
+  document.getElementById("minp").value="";
+  document.getElementById("msel").classList.add("vis");
+  document.getElementById("rts").classList.remove("vis");
+  document.querySelectorAll(".rtb").forEach(b=>b.classList.remove("sel"));
+  const hints={Apple:"e.g. iPhone 15 Pro Max, iPhone SE 3rd Gen...",Samsung:"e.g. Galaxy S24 Ultra, Galaxy A54 5G...",Google:"e.g. Pixel 8 Pro, Pixel 7a...",Laptop:"e.g. MacBook Air M2, Dell XPS 15...",iPad:"e.g. iPad Pro 12.9 M2, iPad Air 5th Gen...",Console:"e.g. PlayStation 5, Xbox Series X..."};
+  document.getElementById("minp").placeholder=hints[make]||"e.g. "+make+" — model name and variant...";
+}
+function onMI(){
+  const v=document.getElementById("minp").value.trim();
+  sModel=v||null;
+  if(v.length>=2) document.getElementById("rts").classList.add("vis");
+  chkP();
+}
+function selRT(el,t){
+  sRT=t;
+  document.querySelectorAll(".rtb").forEach(b=>b.classList.remove("sel"));
+  el.classList.add("sel"); chkP();
+}
+function chkP(){ document.getElementById("pb").disabled=!(sMake&&sModel&&sRT); }
+function openRM(){
+  if(!sMake||!sModel||!sRT)return;
+  document.getElementById("rmst").textContent="Booking: "+sMake+" "+sModel+" — "+sRT;
+  document.getElementById("rfs").style.display="block";
+  document.getElementById("rs").style.display="none";
+  document.getElementById("rd").min=new Date().toISOString().split("T")[0];
+  document.getElementById("rm").classList.add("open");
+}
+function subR(){
+  const n=document.getElementById("rn").value.trim(), e=document.getElementById("re").value.trim(), p=document.getElementById("rph").value.trim(), d=document.getElementById("rd").value;
+  if(!n||!e||!p||!d){sn("&#9888; Please fill in all required fields");return;}
+  svB({id:"REP-"+Date.now(),type:"repair",device:sMake+" "+sModel,repairType:sRT,name:n,email:e,phone:p,date:d,time:document.getElementById("rt").value,branch:document.getElementById("rb").value,notes:document.getElementById("rno").value,createdAt:new Date().toISOString(),status:"pending"});
+  document.getElementById("rfs").style.display="none";
+  document.getElementById("rs").style.display="block";
+  sn("&#9989; Appointment booked successfully!");
+}
+
+// BUY SELL
+let bsType="sell";
+function openBS(t){
+  bsType=t;
+  document.getElementById("bst").textContent=t==="sell"?"&#128176; Sell Your Device":"&#128717; Enquire About Buying";
+  document.getElementById("bssub").textContent=t==="sell"?"Tell us about your device and we'll get back to you with a competitive offer.":"Tell us what you're looking for and we'll find the best option for you.";
+  document.getElementById("bsfs").style.display="block";
+  document.getElementById("bss").style.display="none";
+  document.getElementById("bsm").classList.add("open");
+}
+function subBS(){
+  const n=document.getElementById("bn").value.trim(), e=document.getElementById("be").value.trim(), p=document.getElementById("bph").value.trim();
+  if(!n||!e||!p){sn("&#9888; Please fill in all required fields");return;}
+  svB({id:"BS-"+Date.now(),type:"buysell",requestType:bsType,name:n,email:e,phone:p,brand:document.getElementById("bbr").value,model:document.getElementById("bmo").value,condition:document.getElementById("bco").value,notes:document.getElementById("bno").value,createdAt:new Date().toISOString(),status:"pending"});
+  document.getElementById("bsfs").style.display="none";
+  document.getElementById("bss").style.display="block";
+  sn("&#127881; Request submitted successfully!");
+}
+
+// MODALS
+function cm(id){document.getElementById(id).classList.remove("open");}
+document.querySelectorAll(".mo").forEach(o=>o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("open");}));
+
+// STORAGE
+function svB(b){const a=JSON.parse(localStorage.getItem("vts_bookings")||"[]");a.unshift(b);localStorage.setItem("vts_bookings",JSON.stringify(a));}
+
+// NOTIFICATION
+function sn(m){const el=document.getElementById("notif");el.innerHTML=m;el.style.display="block";clearTimeout(el._t);el._t=setTimeout(()=>el.style.display="none",3800);}
+
+// INIT
+fp();
+</script>
+</body>
+</html>
